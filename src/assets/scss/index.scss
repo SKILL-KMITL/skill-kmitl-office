@@ -1,0 +1,12 @@
+// this will be override vuetify varaible.
+@import './variables';
+@import './font';
+
+/* --------------------------------- Vuetify -------------------------------- */
+@import "~vuetify/dist/vuetify.min.css";
+@import '~vuetify/src/styles/styles.sass';
+
+
+@import "./dashboard/dashboard";
+
+
