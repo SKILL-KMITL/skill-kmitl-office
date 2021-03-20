@@ -23,11 +23,12 @@
       <v-list class="py-0">
         <!-- <v-list-item-group > -->
         <v-list-item
-          v-for="[icon, text, rname] in links"
+          v-for="[icon, text, rname, auth] in links"
           :key="icon"
           :to="{ name: rname }"
           active-class="bg-active"
-          color="white"
+          :color="auth ? (userIsLoggedIn ? 'white' : '') : 'white'"
+          :disabled="auth ? (userIsLoggedIn ? false : true) : false"
         >
           <v-list-item-icon>
             <v-icon color="dark">{{ icon }}</v-icon>
@@ -62,6 +63,20 @@
             </v-list-item-content>
           </v-list-item>
         </v-list>
+        <div
+          style="width: 100%;"
+          class="text-right d-flex flex-row justify-end"
+        >
+          <div class="mr-3 d-none d-md-block" v-if="userData">
+            {{ userData.email }}
+          </div>
+          <a @click="logoutActive()" v-if="userIsLoggedIn">
+            Logout
+          </a>
+          <a @click="loginActive()" v-else>
+            Login
+          </a>
+        </div>
       </v-toolbar>
 
       <!-- Views -->
@@ -74,16 +89,50 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import { logout, login } from "@/router/middleware";
+import { userStore } from "@/store";
 
 @Component({})
 export default class Dashboard extends Vue {
+  public logoutActive() {
+    logout().then(() => {
+      this.$swal("Logout", "ออกจากระบบ", "success").then(() => {
+        if (this.$route.name == "DOverview") {
+          this.$router.go(0);
+        } else {
+          this.$router.push({ name: "DOverview" });
+        }
+      });
+    });
+  }
+
+  public loginActive() {
+    login().then(() => {
+      this.$swal("Logged In", "เข้าสู่ระบบ", "success").then(() => {
+        if (this.$route.name == "DOverview") {
+          this.$router.go(0);
+        } else {
+          this.$router.push({ name: "DOverview" });
+        }
+      });
+    });
+  }
+
+  get userIsLoggedIn() {
+    return userStore.userIsLoggedIn;
+  }
+
+  get userData() {
+    return userStore.userData;
+  }
+
   drawer = true;
   mini = true;
   links = [
-    ["mdi-apps", "Overview", "DOverview"],
-    ["mdi-briefcase-outline", "Manage Career", "DCareer"],
-    ["mdi-cast-education", "Manage Course", "DCourse"],
-    ["mdi-chart-line-variant", "Graph", "DGraph"]
+    ["mdi-apps", "Overview", "DOverview", 0],
+    ["mdi-briefcase-outline", "Manage Career", "DCareer", 1],
+    ["mdi-cast-education", "Manage Course", "DCourse", 1]
+    // ["mdi-chart-line-variant", "Graph", "DGraph", 1]
   ];
 
   get currentLink() {

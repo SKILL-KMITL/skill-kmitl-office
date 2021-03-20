@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
+import { authMiddleware, isLoggedIn, titleMiddleware } from "./middleware";
 
 Vue.use(VueRouter);
 
@@ -22,17 +23,20 @@ const routes: Array<RouteConfig> = [
           {
             path: "career",
             name: "DCareer",
-            component: () => import("@/views/dashboard/Career.vue")
+            component: () => import("@/views/dashboard/Career.vue"),
+            meta: {
+              requiresAuth: 1,
+              title: "Manage Career"
+            }
           },
           {
             path: "course",
             name: "DCourse",
-            component: () => import("@/views/dashboard/Course.vue")
-          },
-          {
-            path: "graph",
-            name: "DGraph",
-            component: () => import("@/views/dashboard/Graph.vue")
+            component: () => import("@/views/dashboard/Course.vue"),
+            meta: {
+              requiresAuth: 1,
+              title: "Manage Course"
+            }
           }
         ]
       }
@@ -45,5 +49,9 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 });
+
+titleMiddleware(router);
+authMiddleware(router);
+isLoggedIn();
 
 export default router;
