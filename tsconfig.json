@@ -13,10 +13,12 @@
     "sourceMap": true,
     "allowJs": true,
     "baseUrl": ".",
+    "noImplicitAny": false,
     "types": [
       "webpack-env",
       "jest",
-      "src/@types/"
+      "src/@types",
+      "vue-sweetalert2"
     ],
     "paths": {
       "@/*": [
