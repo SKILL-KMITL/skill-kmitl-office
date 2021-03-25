@@ -385,7 +385,7 @@ export default class Course extends Dashboard {
           cols: 12,
           label: "รายละเอียดวิชา",
           input: "textarea",
-          counter: 300,
+          counter: 600,
           rules: [val => (val || "").length > 0 || "ฟิลด์นี้ต้องไม่ว่างปล่าว"],
           value: ""
         }
