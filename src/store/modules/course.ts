@@ -319,6 +319,7 @@ export default class CourseStore extends VuexModule {
         ) {
           id
           name
+          name_th
           desc
           subject_id
           course_program_id
@@ -344,6 +345,7 @@ export default class CourseStore extends VuexModule {
   // Update Subject
   @Action({ rawError: true })
   async updateSubject(payload) {
+    console.log(payload);
     const query = gql`
       mutation updateSubject(
         $id: Int

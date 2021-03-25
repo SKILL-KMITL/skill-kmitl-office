@@ -36,7 +36,7 @@
         />
       </v-col>
       <v-col cols="12" md="6" lg="3">
-        <Skill
+        <DSkill
           :selected.sync="selected.skill"
           :loading="loading"
           :ref_id="selected.subject.id"
@@ -270,14 +270,16 @@ import Dashboard from "./Dashboard.vue";
 import ChooseBox from "@/components/dashboard/ChooseBox.vue";
 import { Component, Watch } from "vue-property-decorator";
 import { courseStore } from "@/store";
-import Skill from "@/components/dashboard/course/Skill.vue";
-import Subject from "@/components/dashboard/course/Subject.vue";
+import { Skill } from "@/@types/skill";
+import { Subject } from "@/@types/course";
+import DSkill from "@/components/dashboard/course/Skill.vue";
+import DSubject from "@/components/dashboard/course/Subject.vue";
 @Component({
   name: "DCourse",
   components: {
     ChooseBox,
-    Skill,
-    Subject
+    DSkill,
+    DSubject
   }
 })
 export default class Course extends Dashboard {
@@ -541,10 +543,10 @@ export default class Course extends Dashboard {
   @Watch("selected.skill", { deep: true })
   onSelectSkillChanged(val, old) {
     if (val !== old) {
-      if (!val.ability) {
-        this.selected.skill.ability = [""];
-      }
       this.tempSelectSkill = JSON.parse(JSON.stringify(val));
+      if (!val.ability) {
+        this.tempSelectSkill.ability = [""];
+      }
     }
   }
 }
