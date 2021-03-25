@@ -51,8 +51,8 @@ jobs:
         run: yarn run build --mode production
         env:
           NODE_ENV: production
-          GRAPHQL_URI: ${{ secrets.ONEGRAP_URI }}
-          ONEGRAPHA_APP_ID: ${{ secrets.ONEGRAPHA_APP_ID }}
+          GRAPHQL_URI: ${{ secrets.GRAPHQL_URI }}
+          ONEGRAPH_APP_ID: ${{ secrets.ONEGRAPH_APP_ID }}
           
 
       # Copy project
