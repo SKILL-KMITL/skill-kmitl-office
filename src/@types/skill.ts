@@ -7,7 +7,7 @@ export class Skill {
   ability: string[];
 
   constructor() {
-    this.id = 0;
+    this.id = -1;
     this.name = "Empty Skill...";
     this.name_th = "เลือกทักษะ";
     this.desc = "รายละเอียดทักษะ";

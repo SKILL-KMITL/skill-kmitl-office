@@ -6,7 +6,7 @@ export class Subject {
   subjectId: number;
 
   constructor() {
-    this.id = 0;
+    this.id = -1;
     this.name = "Empty subject...";
     this.nameTh = "กรุณาเพิ่มวิชา";
     this.desc = "รายละเอียดวิชา";

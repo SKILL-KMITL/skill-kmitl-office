@@ -467,6 +467,7 @@ export default class CourseStore extends VuexModule {
             name
             name_th
             desc
+            type
             ability
           }
         }
@@ -478,7 +479,6 @@ export default class CourseStore extends VuexModule {
         variables: payload
       })
       .then(resp => {
-        console.log(resp);
         // update skill store
         const data = resp.data.insert_subject_m_skill_one.skill;
         this.update({
@@ -488,5 +488,44 @@ export default class CourseStore extends VuexModule {
 
         return Promise.resolve(data);
       });
+  }
+
+  // Add new skill
+  @Action({ rawError: true })
+  async updateSkill(payload) {
+    const query = gql`
+      mutation updateSkill(
+        $id: Int
+        $name: String
+        $name_th: String
+        $desc: String
+        $type: String
+        $ability: _varchar
+      ) {
+        update_skills(
+          _set: {
+            name: $name
+            name_th: $name_th
+            desc: $desc
+            type: $type
+            ability: $ability
+          }
+          where: { id: { _eq: $id } }
+        ) {
+          returning {
+            id
+            name
+            name_th
+            desc
+            type
+            ability
+          }
+        }
+      }
+    `;
+    await Vue.prototype.$apolloProvider.defaultClient.mutate({
+      mutation: query,
+      variables: payload
+    });
   }
 }

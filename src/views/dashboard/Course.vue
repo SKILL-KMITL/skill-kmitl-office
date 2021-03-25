@@ -53,12 +53,13 @@
               <div>Skill Detail</div>
               <div class="text-right">
                 <v-fade-transition mode="out-in">
-                  <!-- <v-icon
+                  <v-icon
                     dense
                     color="primary"
                     class="mr-2"
                     style="z-index: 2"
                     v-if="skillDisable"
+                    :disabled="selected.skill.id < 0"
                     @click.stop="skillDisable = false"
                     key="edit"
                     >mdi-circle-edit-outline</v-icon
@@ -69,10 +70,11 @@
                     color="success"
                     class="mr-2"
                     style="z-index: 2"
+                    :disabled="selected.skill.id < 0"
                     @click.stop="submitEditSkill()"
                     key="save"
                     >mdi-check-circle-outline</v-icon
-                  > -->
+                  >
                 </v-fade-transition>
               </div>
             </v-expansion-panel-header>
@@ -177,12 +179,13 @@
               <div>Subject Detail</div>
               <div class="text-right">
                 <v-fade-transition mode="out-in">
-                  <!-- <v-icon
+                  <v-icon
                     dense
                     color="primary"
                     class="mr-2"
                     style="z-index: 2"
                     v-if="positionDisable"
+                    :disabled="selected.subject.id < 0"
                     @click.stop="positionDisable = false"
                     key="edit"
                     >mdi-circle-edit-outline</v-icon
@@ -193,10 +196,11 @@
                     color="success"
                     class="mr-2"
                     style="z-index: 2"
+                    :disabled="selected.subject.id < 0"
                     @click.stop="positionDisable = true"
                     key="save"
                     >mdi-check-circle-outline</v-icon
-                  > -->
+                  >
                 </v-fade-transition>
               </div>
             </v-expansion-panel-header>
@@ -251,22 +255,6 @@
                     >
                     </v-textarea>
                   </v-col>
-                  <!-- <v-col cols="12" md="12">
-                      <div :class="{ 'grey--text': positionDisable }">
-                        Duties
-                      </div>
-                      <v-text-field
-                        :disabled="positionDisable"
-                        class="mb-1"
-                        hide-details
-                        dense
-                        v-for="(dutie, index) in positionDetail.duties"
-                        :key="index"
-                        v-model="positionDetail.duties[index]"
-                        outlined
-                      >
-                      </v-text-field>
-                    </v-col> -->
                 </v-row>
               </v-form>
             </v-expansion-panel-content>
@@ -454,7 +442,7 @@ export default class Course extends Dashboard {
   }
 
   /* --------------------------------- Methods -------------------------------- */
-  submitEditSkill() {
+  async submitEditSkill() {
     if (
       JSON.stringify(this.selected.skill) !==
       JSON.stringify(this.tempSelectSkill)
@@ -462,7 +450,15 @@ export default class Course extends Dashboard {
       const form: any = this.$refs["form-skill"];
       form.validate();
       if (this.formSkillValid) {
-        console.log("valid");
+        // create payload
+        const payload = JSON.parse(JSON.stringify(this.selected.skill));
+        delete payload.__typename;
+        payload.ability = JSON.stringify(payload.ability)
+          .replace("[", "{")
+          .replace("]", "}");
+        await courseStore.updateSkill(payload).then(() => {
+          this.skillDisable = true;
+        });
       } else {
         console.log("not valid");
       }
@@ -533,12 +529,15 @@ export default class Course extends Dashboard {
     }
   }
 
-  // @Watch("selected.skill", { deep: true })
-  // onSelectSkillChanged(val, old) {
-  //   if (val !== old) {
-  //     this.tempSelectSkill = JSON.parse(JSON.stringify(val));
-  //   }
-  // }
+  @Watch("selected.skill", { deep: true })
+  onSelectSkillChanged(val, old) {
+    if (val !== old) {
+      if (!val.ability) {
+        this.selected.skill.ability = [""];
+      }
+      this.tempSelectSkill = JSON.parse(JSON.stringify(val));
+    }
+  }
 }
 </script>
 
