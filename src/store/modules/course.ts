@@ -341,6 +341,44 @@ export default class CourseStore extends VuexModule {
     return data.insert_course_subjects_one;
   }
 
+  // Update Subject
+  @Action({ rawError: true })
+  async updateSubject(payload) {
+    const query = gql`
+      mutation updateSubject(
+        $id: Int
+        $name: String
+        $name_th: String
+        $desc: String
+        $subject_id: Int
+      ) {
+        update_course_subjects(
+          _set: {
+            name: $name
+            name_th: $name_th
+            desc: $desc
+            subject_id: $subject_id
+          }
+          where: { id: { _eq: $id } }
+        ) {
+          returning {
+            id
+            name
+            name_th
+            desc
+            subject_id
+          }
+        }
+      }
+    `;
+    const { data } = await Vue.prototype.$apolloProvider.defaultClient.mutate({
+      mutation: query,
+      variables: payload
+    });
+    const resp = data.update_course_subjects.returning[0];
+    return resp;
+  }
+
   /* ---------------------------------- Skill --------------------------------- */
   @Action({ rawError: true })
   async fetchSkill(payload) {
@@ -490,7 +528,7 @@ export default class CourseStore extends VuexModule {
       });
   }
 
-  // Add new skill
+  // Update Skill
   @Action({ rawError: true })
   async updateSkill(payload) {
     const query = gql`
@@ -523,9 +561,11 @@ export default class CourseStore extends VuexModule {
         }
       }
     `;
-    await Vue.prototype.$apolloProvider.defaultClient.mutate({
+    const { data } = await Vue.prototype.$apolloProvider.defaultClient.mutate({
       mutation: query,
       variables: payload
     });
+    const resp = data.update_skills.returning[0];
+    return resp;
   }
 }

@@ -85,7 +85,7 @@
                     <v-text-field
                       :disabled="skillDisable"
                       label="ชื่อทักษะภาษาอังกฤษ"
-                      v-model="selected.skill.name"
+                      v-model="tempSelectSkill.name"
                       outlined
                       :rules="[
                         i => (i || '').length > 0 || 'ฟิลด์นี้ต้องไม่ว่างปล่าว'
@@ -97,7 +97,7 @@
                     <v-text-field
                       :disabled="skillDisable"
                       label="ชื่อทักษะภาษาไทย"
-                      v-model="selected.skill.name_th"
+                      v-model="tempSelectSkill.name_th"
                       outlined
                     >
                     </v-text-field>
@@ -106,7 +106,7 @@
                     <v-textarea
                       :disabled="skillDisable"
                       label="รายละเอียดทักษะ"
-                      v-model="selected.skill.desc"
+                      v-model="tempSelectSkill.desc"
                       maxlength="500"
                       counter
                       outlined
@@ -123,7 +123,7 @@
                         i => (i || '').length > 0 || 'ฟิลด์นี้ต้องไม่ว่างปล่าว'
                       ]"
                       :items="['Hard Skill', 'Soft Skill']"
-                      v-model="selected.skill.type"
+                      v-model="tempSelectSkill.type"
                     >
                     </v-select>
                   </v-col>
@@ -136,7 +136,7 @@
                       class="ml-1"
                       style="cursor: pointer;"
                       :disabled="skillDisable"
-                      @click="selected.skill.ability.push('')"
+                      @click="tempSelectSkill.ability.push('')"
                       >mdi-plus-circle-outline</v-icon
                     >
                     <v-icon
@@ -146,9 +146,9 @@
                       class="ml-1"
                       style="cursor: pointer;"
                       :disabled="
-                        skillDisable || selected.skill.ability.length <= 1
+                        skillDisable || tempSelectSkill.ability.length <= 1
                       "
-                      @click="selected.skill.ability.pop()"
+                      @click="tempSelectSkill.ability.pop()"
                       >mdi-minus-circle-outline</v-icon
                     >
                     <v-text-field
@@ -158,8 +158,8 @@
                       hide-details
                       :loading="loading"
                       :disabled="skillDisable"
-                      v-for="(ability, index) in selected.skill.ability"
-                      v-model="selected.skill.ability[index]"
+                      v-for="(ability, index) in tempSelectSkill.ability"
+                      v-model="tempSelectSkill.ability[index]"
                       :rules="[
                         i => (i || '').length > 0 || 'ฟิลด์นี้ต้องไม่ว่างปล่าว'
                       ]"
@@ -185,7 +185,7 @@
                     class="mr-2"
                     style="z-index: 2"
                     v-if="positionDisable"
-                    :disabled="selected.subject.id < 0"
+                    :disabled="tempSelectSubject.id < 0"
                     @click.stop="positionDisable = false"
                     key="edit"
                     >mdi-circle-edit-outline</v-icon
@@ -196,8 +196,8 @@
                     color="success"
                     class="mr-2"
                     style="z-index: 2"
-                    :disabled="selected.subject.id < 0"
-                    @click.stop="positionDisable = true"
+                    :disabled="tempSelectSubject.id < 0"
+                    @click.stop="submitEditSubject()"
                     key="save"
                     >mdi-check-circle-outline</v-icon
                   >
@@ -216,7 +216,7 @@
                       :disabled="positionDisable"
                       :loading="loading"
                       label="ชื่อวิชาภาษาอังกฤษ"
-                      v-model="selected.subject.name"
+                      v-model="tempSelectSubject.name"
                       required
                       outlined
                     >
@@ -228,7 +228,7 @@
                       :disabled="positionDisable"
                       :loading="loading"
                       label="ชื่อวิชาภาษาไทย"
-                      v-model="selected.subject.name_th"
+                      v-model="tempSelectSubject.name_th"
                       outlined
                     >
                     </v-text-field>
@@ -238,7 +238,7 @@
                       :disabled="positionDisable"
                       :loading="loading"
                       label="รหัสวิชา"
-                      v-model="selected.subject.subject_id"
+                      v-model="tempSelectSubject.subject_id"
                       outlined
                     >
                     </v-text-field>
@@ -248,7 +248,7 @@
                       :disabled="positionDisable"
                       :loading="loading"
                       label="Description"
-                      v-model="selected.subject.desc"
+                      v-model="tempSelectSubject.desc"
                       maxlength="500"
                       counter
                       outlined
@@ -293,8 +293,8 @@ export default class Course extends Dashboard {
   panels = 0;
   positionDisable = true;
   skillDisable = true;
-  tempSelectSkill = {};
-  tempSelectSubject = {};
+  tempSelectSkill = new Skill();
+  tempSelectSubject = new Subject();
   formSubjectValid = true;
   formSkillValid = true;
   private forms = {
@@ -443,27 +443,36 @@ export default class Course extends Dashboard {
 
   /* --------------------------------- Methods -------------------------------- */
   async submitEditSkill() {
-    if (
-      JSON.stringify(this.selected.skill) !==
-      JSON.stringify(this.tempSelectSkill)
-    ) {
-      const form: any = this.$refs["form-skill"];
-      form.validate();
-      if (this.formSkillValid) {
-        // create payload
-        const payload = JSON.parse(JSON.stringify(this.selected.skill));
-        delete payload.__typename;
-        payload.ability = JSON.stringify(payload.ability)
-          .replace("[", "{")
-          .replace("]", "}");
-        await courseStore.updateSkill(payload).then(() => {
-          this.skillDisable = true;
-        });
-      } else {
-        console.log("not valid");
-      }
-    } else {
-      console.log("same");
+    const form: any = this.$refs["form-skill"];
+    form.validate();
+    if (this.formSkillValid) {
+      // create payload
+      const payload = JSON.parse(JSON.stringify(this.tempSelectSkill));
+      delete payload.__typename;
+      payload.ability = JSON.stringify(payload.ability)
+        .replace("[", "{")
+        .replace("]", "}");
+      await courseStore.updateSkill(payload).then(resp => {
+        courseStore.fetchSkill({ id: this.selected.subject.id });
+        this.selected.skill = resp;
+        this.skillDisable = true;
+      });
+    }
+  }
+
+  async submitEditSubject() {
+    const form: any = this.$refs["form-subject"];
+    form.validate();
+    if (this.formSubjectValid) {
+      // create payload
+      const payload = JSON.parse(JSON.stringify(this.tempSelectSubject));
+      delete payload.__typename;
+      delete payload.course_program_id;
+      -(await courseStore.updateSubject(payload).then(resp => {
+        courseStore.fetchSubject(this.selected.program.id);
+        this.selected.subject = resp;
+        this.positionDisable = true;
+      }));
     }
   }
 
@@ -521,10 +530,10 @@ export default class Course extends Dashboard {
       this.selected.subject = val[0];
   }
 
-  @Watch("selected.subject.id", { deep: true })
+  @Watch("selected.subject", { deep: true })
   async onSelectSubjectChanged(val, old) {
     if (val !== old) {
-      await courseStore.fetchSkill({ id: val });
+      await courseStore.fetchSkill({ id: val.id });
       this.tempSelectSubject = JSON.parse(JSON.stringify(val));
     }
   }
