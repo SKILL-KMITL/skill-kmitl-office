@@ -23,12 +23,16 @@
       <v-list class="py-0">
         <!-- <v-list-item-group > -->
         <v-list-item
-          v-for="[icon, text, rname, auth] in links"
+          v-for="[icon, text, rname, auth, disabled] in links"
           :key="icon"
           :to="{ name: rname }"
-          active-class="bg-active"
-          :color="auth ? (userIsLoggedIn ? 'white' : '') : 'white'"
-          :disabled="auth ? (userIsLoggedIn ? false : true) : false"
+          :class="{ 'bg-active': $route.name == rname }"
+          :color="
+            disabled ? '' : auth ? (userIsLoggedIn ? 'white' : '') : 'white'
+          "
+          :disabled="
+            disabled ? true : auth ? (userIsLoggedIn ? false : true) : false
+          "
         >
           <v-list-item-icon>
             <v-icon color="dark">{{ icon }}</v-icon>
@@ -130,7 +134,7 @@ export default class Dashboard extends Vue {
   mini = true;
   links = [
     ["mdi-apps", "Overview", "DOverview", 0],
-    ["mdi-briefcase-outline", "Manage Career", "DCareer", 1],
+    ["mdi-briefcase-outline", "Manage Career", "DCareer", 1, true],
     ["mdi-cast-education", "Manage Course", "DCourse", 1]
     // ["mdi-chart-line-variant", "Graph", "DGraph", 1]
   ];

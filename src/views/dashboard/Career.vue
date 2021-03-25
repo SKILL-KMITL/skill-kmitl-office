@@ -1,5 +1,5 @@
 <template>
-  <div class="d-career-container">
+  <div class="d-container">
     <v-row>
       <v-col cols="12" md="6" lg="3">
         <choose-box
@@ -342,33 +342,23 @@ export default class Career extends Dashboard {
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type",
     ability: ["Doing1", "Dogin2", "Dogin3"]
   };
-
-  /* --------------------------------- Methods -------------------------------- */
-  public getElmsHeight(query: string) {
-    const elms = document.querySelectorAll(query);
-    let height = 0;
-    for (const elm of elms) {
-      height += elm.clientHeight;
-    }
-    return height;
-  }
 }
 </script>
 
 <style lang="scss">
 @import "~vuetify/src/styles/settings/_variables";
 
-.d-career-container,
-.d-career-container > .row,
-.d-career-container > .row > div {
+.d-container,
+.d-container > .row,
+.d-container > .row > div {
   height: 100%;
   min-height: 100%;
 }
 
 @media #{map-get($display-breakpoints, 'md-and-down')} {
-  .d-career-container,
-  .d-career-container > .row,
-  .d-career-container > .row > div {
+  .d-container,
+  .d-container > .row,
+  .d-container > .row > div {
     height: auto;
     min-height: 100%;
   }
@@ -382,7 +372,7 @@ export default class Career extends Dashboard {
   height: 100%;
 }
 
-.d-career-container > .row > div {
+.d-container > .row > div {
   display: flex;
   flex-direction: column;
 }

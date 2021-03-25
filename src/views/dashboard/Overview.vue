@@ -1,7 +1,9 @@
 <template>
-  <div>
-    Overview
-    {{ career_fields }}
+  <div style="height: 100%" class="d-flex">
+    <iframe
+      src="https://skill.kmitl.ac.th"
+      style="width: 100%; border: none"
+    ></iframe>
   </div>
 </template>
 
@@ -10,17 +12,6 @@ import gql from "graphql-tag";
 import { Component } from "vue-property-decorator";
 import Dashboard from "./Dashboard.vue";
 
-@Component({
-  apollo: {
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    career_fields: gql`
-      query Query {
-        career_fields {
-          name
-        }
-      }
-    `
-  }
-})
+@Component({})
 export default class Overview extends Dashboard {}
 </script>

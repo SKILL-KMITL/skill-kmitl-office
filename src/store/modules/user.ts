@@ -1,4 +1,3 @@
-import Vue from "vue";
 import { Module, VuexModule, Mutation, Action } from "vuex-module-decorators";
 import { User } from "@/@types/user";
 
