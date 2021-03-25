@@ -76,6 +76,16 @@
                     >mdi-check-circle-outline</v-icon
                   >
                 </v-fade-transition>
+                <v-icon
+                  dense
+                  color="red"
+                  class="mr-2"
+                  style="z-index: 2"
+                  :disabled="tempSelectSkill.id < 0"
+                  @click.stop="submitDeleteSkill()"
+                  key="save"
+                  >mdi-minus-circle-outline</v-icon
+                >
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
@@ -202,6 +212,16 @@
                     >mdi-check-circle-outline</v-icon
                   >
                 </v-fade-transition>
+                <v-icon
+                  dense
+                  color="red"
+                  class="mr-2"
+                  style="z-index: 2"
+                  :disabled="tempSelectSubject.id < 0"
+                  @click.stop="submitDeleteSubject()"
+                  key="save"
+                  >mdi-minus-circle-outline</v-icon
+                >
               </div>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
@@ -462,6 +482,34 @@ export default class Course extends Dashboard {
     }
   }
 
+  async submitDeleteSkill() {
+    this.$swal({
+      title: "ยืนยันการลบ",
+      html: `คุณต้องการทักษะ <b>"${this.tempSelectSkill.name}"</b> ออกจากวิชา <b>"${this.selected.subject.name}"</b> หรือไม่?`,
+      icon: "warning",
+      confirmButtonColor: "#f44336",
+      cancelButtonText: "CANCEL",
+      confirmButtonText: `DELETE`,
+      showCancelButton: true,
+      focusCancel: true
+    }).then(async result => {
+      if (result.isConfirmed) {
+        courseStore
+          .deleteSkill({
+            subject_id: this.selected.subject.id,
+            skill_id: this.selected.skill.id
+          })
+          .then(() =>
+            this.$swal(
+              "ทำการลบสำเร็จ",
+              `การลบวิชา "${this.tempSelectSkill.name}" ออกจากหลักสูตร "${this.selected.subject.name}" เสร็จสิ้น`,
+              "success"
+            )
+          );
+      }
+    });
+  }
+
   async submitEditSubject() {
     const form: any = this.$refs["form-subject"];
     form.validate();
@@ -476,6 +524,31 @@ export default class Course extends Dashboard {
         this.positionDisable = true;
       }));
     }
+  }
+
+  async submitDeleteSubject() {
+    this.$swal({
+      title: "ยืนยันการลบ",
+      html: `คุณต้องการลบวิชา <b>"${this.selected.subject.name}"</b> ออกจากหลักสูตร <b>"${this.selected.program.name}"</b> หรือไม่?`,
+      icon: "warning",
+      confirmButtonColor: "#f44336",
+      cancelButtonText: "CANCEL",
+      confirmButtonText: `DELETE`,
+      showCancelButton: true,
+      focusCancel: true
+    }).then(async result => {
+      if (result.isConfirmed) {
+        courseStore
+          .deleteSubject({ id: this.selected.subject.id })
+          .then(() =>
+            this.$swal(
+              "ทำการลบสำเร็จ",
+              `การลบวิชา "${this.tempSelectSubject.name}" ออกจากหลักสูตร "${this.selected.program.name}" เสร็จสิ้น`,
+              "success"
+            )
+          );
+      }
+    });
   }
 
   /* ---------------------------------- Watch --------------------------------- */

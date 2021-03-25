@@ -249,7 +249,6 @@ export default class CourseStore extends VuexModule {
         }
       }
     `;
-
     await Vue.prototype.$apolloProvider.defaultClient
       .mutate({
         mutation: query,
@@ -380,6 +379,37 @@ export default class CourseStore extends VuexModule {
     });
     const resp = data.update_course_subjects.returning[0];
     return resp;
+  }
+
+  // Delete Subject
+  @Action({ rawError: true })
+  async deleteSubject(payload) {
+    const query = gql`
+      mutation deleteSubject($id: Int) {
+        delete_course_subjects(where: { id: { _eq: $id } }) {
+          returning {
+            id
+          }
+        }
+      }
+    `;
+    await Vue.prototype.$apolloProvider.defaultClient
+      .mutate({
+        mutation: query,
+        variables: payload
+      })
+      .then(async resp => {
+        const updateData = this.subjects.filter(item => item.id !== payload.id);
+        if (updateData.length) {
+          this.update({ key: "subjects", value: updateData });
+        } else {
+          this.update({
+            key: "subjects",
+            value: [{ name: "Empty Subjects...", id: -1 }]
+          });
+        }
+        return Promise.resolve(resp);
+      });
   }
 
   /* ---------------------------------- Skill --------------------------------- */
@@ -570,5 +600,46 @@ export default class CourseStore extends VuexModule {
     });
     const resp = data.update_skills.returning[0];
     return resp;
+  }
+
+  // Delete Skill
+  @Action({ rawError: true })
+  async deleteSkill(payload) {
+    const query = gql`
+      mutation deleteSkill($skill_id: Int, $subject_id: Int) {
+        delete_subject_m_skill(
+          where: {
+            skill_id: { _eq: $skill_id }
+            subject_id: { _eq: $subject_id }
+          }
+        ) {
+          returning {
+            skill {
+              id
+            }
+          }
+        }
+      }
+    `;
+    await Vue.prototype.$apolloProvider.defaultClient
+      .mutate({
+        mutation: query,
+        variables: payload
+      })
+      .then(async resp => {
+        const affectData = resp.data.delete_subject_m_skill.returning[0].skill;
+        const updateData = this.skills.filter(
+          item => item.id !== affectData.id && item.id !== -1
+        );
+        if (updateData.length) {
+          this.update({ key: "skills", value: updateData });
+        } else {
+          this.update({
+            key: "skills",
+            value: [new Skill()]
+          });
+        }
+        return Promise.resolve(resp);
+      });
   }
 }
