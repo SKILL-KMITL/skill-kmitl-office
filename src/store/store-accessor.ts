@@ -6,22 +6,30 @@
 import { Store } from "vuex";
 import { getModule } from "vuex-module-decorators";
 import UserModule from "@/store/modules/user";
+import CareerModule from "@/store/modules/career";
+import CourseModule from "@/store/modules/course";
 
 // Each store is the singleton instance of its module class
 // Use these -- they have methods for state/getters/mutations/actions
 // (result from getModule(...))
 export let userStore: UserModule;
+export let careerStore: CareerModule;
+export let courseStore: CourseModule;
 
 // initializer plugin: sets up state/getters/mutations/actions for each store
 export function initializeStores(store: Store<any>): void {
   userStore = getModule(UserModule, store);
+  careerStore = getModule(CareerModule, store);
+  courseStore = getModule(CourseModule, store);
 }
 
 // for use in 'modules' store init (see store/index.ts), so each module
 // appears as an element of the root store's state.
 // (This is required!)
 export const modules = {
-  user: UserModule
+  user: UserModule,
+  career: CareerModule,
+  course: CourseModule
 };
 
 // console.log('end of store-accessor: UserModule=<', typeof UserModule, '>') // expect "function"
