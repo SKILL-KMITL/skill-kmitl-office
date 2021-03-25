@@ -304,7 +304,7 @@ export default class CourseStore extends VuexModule {
       mutation insertSubject(
         $name: String
         $name_th: String
-        $subject_id: Int
+        $subject_id: String
         $desc: String
         $course_program_id: Int
       ) {
@@ -326,6 +326,7 @@ export default class CourseStore extends VuexModule {
         }
       }
     `;
+    payload.subject_id = payload.subject_id.toString();
     const { data } = await Vue.prototype.$apolloProvider.defaultClient
       .mutate({
         mutation: query,
@@ -345,14 +346,13 @@ export default class CourseStore extends VuexModule {
   // Update Subject
   @Action({ rawError: true })
   async updateSubject(payload) {
-    console.log(payload);
     const query = gql`
       mutation updateSubject(
         $id: Int
         $name: String
         $name_th: String
         $desc: String
-        $subject_id: Int
+        $subject_id: String
       ) {
         update_course_subjects(
           _set: {
@@ -373,6 +373,7 @@ export default class CourseStore extends VuexModule {
         }
       }
     `;
+    payload.subject_id = payload.subject_id.toString();
     const { data } = await Vue.prototype.$apolloProvider.defaultClient.mutate({
       mutation: query,
       variables: payload
