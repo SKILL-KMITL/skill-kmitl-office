@@ -8,7 +8,7 @@ const auth = new OneGraphAuth({
 
 export function titleMiddleware(router: any) {
   router.beforeEach((to: any, from: any, next: any) => {
-    document.title = to.meta.title || "SKILL KMITL";
+    document.title = to.meta.title || "Skill Mapping - KMITL";
     next();
   });
 }
